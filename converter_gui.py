@@ -10,13 +10,37 @@ import cv2
 
 
 class VideoCreatorApp:
+    """
+    A class representing a video creator application.
+
+    This class provides a graphical user interface for creating videos by combining
+    an audio file and an image file using FFmpeg. It allows the user to select the
+    audio and image files, specify the output file name, and create the video.
+
+    Attributes:
+        root (tk.Tk): The root window of the application.
+        audio_file (str): The path of the selected audio file.
+        image_file (str): The path of the selected image file.
+
+    Methods:
+        __init__(self, root): Initializes the VideoCreatorApp instance.
+        choose_audio_file(self): Opens a file dialog to choose an audio file.
+        choose_image_file(self): Opens a file dialog to choose an image file.
+        create_video(self): Creates a video by combining the audio and image files.
+    """
+
     def __init__(self, root):
+        """
+        Initializes the VideoCreatorApp instance.
+
+        Args:
+            root (tk.Tk): The root window of the application.
+        """
         self.root = root
         self.root.title("Video Creator")
         self.root.geometry("500x500")
         self.root.resizable(False, False)
 
-                
         # Get screen width and height
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
@@ -27,7 +51,6 @@ class VideoCreatorApp:
 
         # Set the geometry of the window
         root.geometry(f"500x500+{position_right}+{position_top}")
-
 
         self.audio_file_label = tk.Label(root, text="Seleziona file audio:")
         self.audio_file_label.pack(pady=10)
@@ -67,6 +90,12 @@ class VideoCreatorApp:
         self.log_text.pack(pady=10)
 
     def choose_audio_file(self):
+        """
+        Opens a file dialog to choose an audio file.
+        Updates the self.audio_file attribute with the selected file path.
+        Updates the self.audio_file_selected_label with the selected file path.
+        Inserts a log message indicating that an audio file has been selected.
+        """
         self.audio_file = filedialog.askopenfilename(
             filetypes=[("Audio Files", "*.mp3 *.wav")]
         )
@@ -75,8 +104,11 @@ class VideoCreatorApp:
         )
         self.log_text.insert(tk.END, "Selected Audio.\n")
 
-
     def choose_image_file(self):
+        """
+        Opens a file dialog to choose an image file, rescales it to 1920x1080 pixels,
+        and saves the rescaled image as "rescaled_img.png".
+        """
         self.image_file = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.png *.jpg *.jpeg")]
         )
@@ -95,6 +127,10 @@ class VideoCreatorApp:
         self.log_text.insert(tk.END, "Rescaled Image.\n")
 
     def create_video(self):
+        """
+        Creates a video by combining an image file and an audio file using FFmpeg.
+        The output video file is saved with the specified name or with a default name if not provided.
+        """
         output_file = self.output_file_entry.get()
         if not output_file.endswith(".mp4"):
             output_file += ".mp4"
@@ -128,6 +164,20 @@ class VideoCreatorApp:
         ]
 
         def run_ffmpeg_command():
+            """
+            Runs the FFmpeg command to create a video and convert it to MP4.
+
+            This function executes the FFmpeg command specified by `ffmpeg_cmd` to create a video.
+            It then checks if the output file was successfully created and displays appropriate messages.
+            If the output file was created, it converts it to MP4 using the `converter_mp4.py` script.
+            Finally, it deletes the rescaled image file and the original output file.
+
+            Raises:
+                Exception: If the output file was not created.
+
+            Returns:
+                None
+            """
             try:
                 process = subprocess.Popen(
                     ffmpeg_cmd,
