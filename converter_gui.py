@@ -186,6 +186,9 @@ class VideoCreatorApp:
                     text=True,
                 )
                 self.log_text.insert(tk.END, "Creation in progress.\n")
+                for line in process.stdout:
+                    self.log_text.insert(tk.END, line)
+                    
                 process.wait()
 
                 # Check if the output file was created
@@ -211,6 +214,7 @@ class VideoCreatorApp:
             messagebox.showinfo("Risultato", result_message)
 
         thread = threading.Thread(target=run_ffmpeg_command)
+        thread.setDaemon(True)
         thread.start()
 
 
